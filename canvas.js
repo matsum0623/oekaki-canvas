@@ -157,7 +157,9 @@
      * キャンバスのクリア
      */
     function clearCanvas(){
-    	document.getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        if(window.confirm('クリアします。よろしいですか？')){
+        	document.getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        }
     }
     
     /**
