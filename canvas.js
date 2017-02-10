@@ -82,11 +82,21 @@
         const x0 = document.getElementById("penX").value;
         const y0 = document.getElementById("penY").value;
         
-        // ペンの太さ
+        const penStyle = document.getElementById("penStyle").value;
+        
+        let penColor = "";
+        if(penStyle == "eraser"){
+            penColor = "#ffffff";
+        }else{
+            penColor = document.getElementById("penColor").value;
+        }    
+        
+        const penThick = document.getElementById("penThick").value;
+        
     	let ctx = canvas.getContext('2d');
         ctx.beginPath();
-        ctx.lineWidth =  document.getElementById("penThick").value;
-        ctx.strokeStyle = document.getElementById("penColor").value;
+        ctx.lineWidth = penThick;
+        ctx.strokeStyle = penColor;
         ctx.moveTo(x0,y0);
         ctx.lineTo(coor.x,coor.y);
         ctx.closePath();
@@ -195,16 +205,73 @@
     function createPenControl(){
         const penControl = document.createElement("div");
         penControl.setAttribute("id","penControl");
-        penControl.innerHTML = "ペンの太さ:";
         penControl.style.padding = "5px";
         penControl.style.margin = "0 auto";
     	penControl.style.display = "inline-block";
 
+        // ペンの種類コントロールの作成
+        penControl.appendChild(createPenStyleControl());
+
+        // ペンの太さコントロールの作成
+        penControl.appendChild(createPenThickControl());
+        
+        
+        
+        return penControl;
+    }
+    
+    function createPenStyleControl(){
+        // ペンの太さ変更コントロールの作成
+        const penStyleDiv = document.createElement("div");
+        penStyleDiv.setAttribute("id","penThickDiv");
+        penStyleDiv.style.display = "inline-block";
+        penStyleDiv.style.padding = "5px";
+        
+        const penStyleLabel = document.createElement("label");
+        penStyleLabel.innerHTML = "ペンの種類：";
+        penStyleDiv.appendChild(penStyleLabel);
+        
+        const penStyle = document.createElement("select");
+        penStyle.setAttribute("id","penStyle");
+        penStyle.style.width = "100px";
+        
+        const penStylePen = document.createElement("option");
+        penStylePen.setAttribute("value","pen");
+        penStylePen.innerHTML = "通常";
+        penStyle.appendChild(penStylePen);
+        
+        const penStyleEraser = document.createElement("option");
+        penStyleEraser.setAttribute("value","eraser");
+        penStyleEraser.innerHTML = "消しゴム";
+        penStyle.appendChild(penStyleEraser);
+        
+        penStyleDiv.appendChild(penStyle);
+        return penStyleDiv;
+    }
+    
+    
+    function createPenThickControl(){
+        // ペンの太さ変更コントロールの作成
+        const penThickDiv = document.createElement("div");
+        penThickDiv.setAttribute("id","penThickDiv");
+        penThickDiv.style.display = "inline-block";
+        penThickDiv.style.padding = "5px";
+        
+        const penThickLabel = document.createElement("label");
+        penThickLabel.innerHTML = "ペンの太さ：";
+        penThickDiv.appendChild(penThickLabel);
+        
         const penThick = document.createElement("select");
         penThick.setAttribute("id","penThick");
+        penThick.style.width = "100px";
         
+        const penThinest = document.createElement("option");
+        penThinest.setAttribute("value","1");
+        penThinest.innerHTML = "極細";
+        penThick.appendChild(penThinest);
+
         const penThin = document.createElement("option");
-        penThin.setAttribute("value","1");
+        penThin.setAttribute("value","3");
         penThin.innerHTML = "細い";
         penThick.appendChild(penThin);
         
@@ -213,10 +280,14 @@
         penBig.innerHTML = "太い";
         penThick.appendChild(penBig);
         
+        const penBigest = document.createElement("option");
+        penBigest.setAttribute("value","7");
+        penBigest.innerHTML = "極太";
+        penThick.appendChild(penBigest);
         
-        penControl.appendChild(penThick);
         
-        return penControl;
+        penThickDiv.appendChild(penThick);
+        return penThickDiv;
     }
     
     /**
@@ -251,30 +322,28 @@
     function createHiddenArea(){
         const hiddenArea = document.createElement("div");
         
-        const penStyle = document.createElement("input");
-        penStyle.setAttribute("type","hidden");
-        penStyle.setAttribute("id","penStyle");
-        penStyle.setAttribute("value","pen");
-        hiddenArea.appendChild(penStyle);
-        
+        // 描画位置X
         const penX = document.createElement("input");
         penX.setAttribute("type","hidden");
         penX.setAttribute("id","penX");
         penX.setAttribute("value","");
         hiddenArea.appendChild(penX);
 
+        // 描画位置Y
         const penY = document.createElement("input");
         penY.setAttribute("type","hidden");
         penY.setAttribute("id","penY");
         penY.setAttribute("value","");
         hiddenArea.appendChild(penY);
 
+        // マウス押下判断
         const mouseDown = document.createElement("input");
         mouseDown.setAttribute("type","hidden");
         mouseDown.setAttribute("id","mouseDown");
         mouseDown.setAttribute("value","off");
         hiddenArea.appendChild(mouseDown);
 
+        // マウス描画内判断
         const mouseIn = document.createElement("input");
         mouseIn.setAttribute("type","hidden");
         mouseIn.setAttribute("id","mouseIn");
