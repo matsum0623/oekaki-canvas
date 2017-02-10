@@ -1,36 +1,32 @@
 (function () {
     
+    const _styleCanvasWidth = 1200;
+    const _styleCanvasHeight = _styleCanvasWidth*9/16;
+    const _styleBorder1pxSolid = "1px solid";
+    const _stylePadding20px = "20px";
+    const _canvasDivId = "OekakiCanvas";
+    const _canvasId = "myCanvas";
+    
     window.onload = function() {
-        if(document.getElementById("OekakiCanvas") != null){
+        if(document.getElementById(_canvasDivId) != null){
             init();
         }
     };
         
     function init(){
-        const canvasDiv = document.getElementById("OekakiCanvas");
-        canvasDiv.style.padding = "20px";
+        const canvasDiv = document.getElementById(_canvasDivId);
+        canvasDiv.style.padding = _stylePadding20px;
         
         // メインキャンバスの作成
         const canvas = document.createElement("canvas");
-        canvas.setAttribute("id","myCanvas");
+        canvas.setAttribute("id",_canvasId);
+    	canvas.width = _styleCanvasWidth;
+    	canvas.height = _styleCanvasHeight;
+    	canvas.style.border = _styleBorder1pxSolid;
         canvasDiv.appendChild(canvas);
-    	canvas.width = 600;
-    	canvas.height = 450;
-    	canvas.style.border = "1px solid";
-    	
-    	// 制御パネルの作成
-    	const controlPanel = document.createElement("div");
-    	// カラーピッカーの作成
-        controlPanel.appendChild(createColorPicker());
-    	
-    	// 描画ブラシ設定パネルの作成
-    	controlPanel.appendChild(createPenControl());
-    	
-    	// 印刷等のコントロールの作成
-    	controlPanel.appendChild(createControl());
     	
     	// 制御パネルをCANVASに追加
-    	canvasDiv.appendChild(controlPanel);
+    	canvasDiv.appendChild(createControlPanel());
 
     	// 非表示データ領域の作成
     	canvasDiv.appendChild(createHiddenArea());
@@ -52,7 +48,7 @@
         if(e.which != 1){
             return;
         }
-    	let canvas = document.getElementById("myCanvas");
+    	let canvas = document.getElementById(_canvasId);
     	let coor = getCoordinate(canvas, e);
     
         document.getElementById("mouseDown").value = "on";
@@ -67,8 +63,7 @@
         // click状態で描画範囲に入ってきた場合の処理
         if(document.getElementById("mouseIn").value == "off" && e.which == 1){
             document.getElementById("mouseDown").value = "on"; 
-            const canvas = document.getElementById("myCanvas");
-            const coor = getCoordinate(canvas, e);
+            const coor = getCoordinate(document.getElementById(_canvasId), e);
             document.getElementById("penX").value = coor.x;
             document.getElementById("penY").value = coor.y;
             document.getElementById("mouseIn").value = "on";
@@ -80,7 +75,7 @@
             return;
         }
         document.body.style.cursor = "default";
-    	let canvas = document.getElementById("myCanvas");
+    	let canvas = document.getElementById(_canvasId);
         
     	let coor = getCoordinate(canvas, e);
     
@@ -88,10 +83,9 @@
         const y0 = document.getElementById("penY").value;
         
         // ペンの太さ
-        const penThick = document.getElementById("penThick").value;
     	let ctx = canvas.getContext('2d');
         ctx.beginPath();
-        ctx.lineWidth = penThick;
+        ctx.lineWidth =  document.getElementById("penThick").value;
         ctx.strokeStyle = document.getElementById("penColor").value;
         ctx.moveTo(x0,y0);
         ctx.lineTo(coor.x,coor.y);
@@ -121,35 +115,31 @@
      * 現在位置の取得
      */
     function getCoordinate(element, event){
-        const res = {
+        return {
             x:event.clientX - element.offsetLeft + window.pageXOffset,
             y:event.clientY - element.offsetTop  + window.pageYOffset
         };
-        return res;
     }
     
     /**
      * キャンバスの印刷
      */
     function printCanvas(){
-    	const canvas = document.getElementById("myCanvas");
-        const printURL = canvas.toDataURL();
-        
         if(window.document.getElementById('printFrame') == null){
             const iframeElement = document.createElement("iframe");
             iframeElement.setAttribute("id","printFrame");
             iframeElement.style.visibility = "hidden";
+            iframeElement.style.width = "1px";
+            iframeElement.style.height = "1px";
             window.document.body.appendChild(iframeElement);
         }
-        const iframe = window.document.getElementById('printFrame');
-        const iframeWindow = iframe.contentWindow;
+        const iframeWindow = window.document.getElementById('printFrame').contentWindow;
         if(iframeWindow.document.getElementById('printImg') == null){
             const imgElement = document.createElement('img');
             imgElement.setAttribute("id","printImg");
             iframeWindow.document.body.appendChild(imgElement);
         }
-        const iframeImg = iframeWindow.document.getElementById('printImg');
-        iframeImg.src = printURL;
+        iframeWindow.document.getElementById('printImg').src = document.getElementById(_canvasId).toDataURL();
         iframeWindow.print();
     }
     
@@ -157,9 +147,26 @@
      * キャンバスのクリア
      */
     function clearCanvas(){
-    	const canvas = document.getElementById("myCanvas");
-    	let ctx = canvas.getContext('2d');
-        ctx.clearRect(0,0,600,450);
+    	document.getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
+    }
+    
+    /**
+     * コントロールパネルの作成
+     */
+    function createControlPanel(){
+    	// 制御パネルの作成
+    	const controlPanel = document.createElement("div");
+    	
+    	// カラーピッカーの作成
+        controlPanel.appendChild(createColorPicker());
+    	
+    	// 描画ブラシ設定パネルの作成
+    	controlPanel.appendChild(createPenControl());
+    	
+    	// 印刷等のコントロールの作成
+    	controlPanel.appendChild(createControl());
+    	
+        return controlPanel;
     }
     
     
