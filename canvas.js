@@ -7,6 +7,8 @@
     const _canvasDivId = "OekakiCanvas";
     const _canvasId = "myCanvas";
     
+    let imageData = [];
+    
     window.onload = function() {
         if(document.getElementById(_canvasDivId) != null){
             init();
@@ -33,10 +35,10 @@
     	
 
     	// マウス動作の追加
-    	canvasDiv.addEventListener("mousedown", mousedown);
-    	canvasDiv.addEventListener("mousemove", mousemove);
-    	canvasDiv.addEventListener("mouseup",   mouseup);
-    	canvasDiv.addEventListener("mouseout",  mouseout);
+    	canvas.addEventListener("mousedown", mousedown);
+    	canvas.addEventListener("mousemove", mousemove);
+    	canvas.addEventListener("mouseup",   mouseup);
+    	canvas.addEventListener("mouseout",  mouseout);
     }
     
     
@@ -111,6 +113,7 @@
     function mouseup(e){
         document.getElementById("mouseDown").value = "off";
         document.body.style.cursor = "auto";
+        saveCanvas();
     }
     
     /**
@@ -315,6 +318,14 @@
         printButton.addEventListener("mousedown",printCanvas);
         control.appendChild(printButton);
         
+        const backButton = document.createElement("input");
+        backButton.setAttribute("type","button");
+        backButton.setAttribute("id","backButton");
+        backButton.setAttribute("value","back");
+        backButton.addEventListener("mousedown",restoreCanvas);
+        control.appendChild(backButton);
+        
+        
         return control;
     }
     
@@ -352,7 +363,36 @@
         mouseIn.setAttribute("value","off");
         hiddenArea.appendChild(mouseIn);
         
+        // イメージデータ保存
+        const backNum = document.createElement("input");
+        backNum.setAttribute("type","hidden");
+        backNum.setAttribute("id","backNum");
+        backNum.setAttribute("value","0");
+        hiddenArea.appendChild(backNum);
+
         return hiddenArea;
     }
     
+    /**
+     * キャンバスの保存
+     */
+    function saveCanvas(){
+        const backNum = parseInt(document.getElementById("backNum").value) + 1;
+        imageData[backNum] = document.getElementById(_canvasId).getContext('2d').getImageData(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        document.getElementById("backNum").value = backNum.toString();
+    }
+     
+    /**
+     * キャンバスのリストア
+     */
+    function restoreCanvas(){
+        document.getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        const backNum = parseInt(document.getElementById("backNum").value) - 1;
+        if(backNum > 0){
+            document.getElementById(_canvasId).getContext('2d').putImageData(imageData[backNum],0,0);
+        }else if(backNum < 0){
+            return;
+        }
+        document.getElementById("backNum").value = backNum.toString();
+    }
 })();
