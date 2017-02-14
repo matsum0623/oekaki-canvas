@@ -10,21 +10,19 @@
     let imageData = [];
     
     window.onload = function() {
-        if(document.getElementById(_canvasDivId) != null){
+        if(_getElementById(_canvasDivId) != null){
             init();
         }
     };
         
     function init(){
-        const canvasDiv = document.getElementById(_canvasDivId);
+        const canvasDiv = _getElementById(_canvasDivId);
         canvasDiv.style.padding = _stylePadding20px;
         
         // メインキャンバスの作成
-        const canvas = document.createElement("canvas");
-        canvas.setAttribute("id",_canvasId);
+        const canvas = _createElement("canvas",{id:_canvasId},{border:_styleBorder1pxSolid},"");
     	canvas.width = _styleCanvasWidth;
     	canvas.height = _styleCanvasHeight;
-    	canvas.style.border = _styleBorder1pxSolid;
         canvasDiv.appendChild(canvas);
     	
     	// 制御パネルをCANVASに追加
@@ -50,12 +48,12 @@
         if(e.which != 1){
             return;
         }
-    	let canvas = document.getElementById(_canvasId);
+    	let canvas = _getElementById(_canvasId);
     	let coor = getCoordinate(canvas, e);
     
-        document.getElementById("mouseDown").value = "on";
-        document.getElementById("penX").value = coor.x;
-        document.getElementById("penY").value = coor.y;
+        _getElementById("mouseDown").value = "on";
+        _getElementById("penX").value = coor.x;
+        _getElementById("penY").value = coor.y;
     }
     
     /**
@@ -63,37 +61,37 @@
      */
     function mousemove(e){
         // click状態で描画範囲に入ってきた場合の処理
-        if(document.getElementById("mouseIn").value == "off" && e.which == 1){
-            document.getElementById("mouseDown").value = "on"; 
-            const coor = getCoordinate(document.getElementById(_canvasId), e);
-            document.getElementById("penX").value = coor.x;
-            document.getElementById("penY").value = coor.y;
-            document.getElementById("mouseIn").value = "on";
-        }else if(document.getElementById("mouseIn").value == "off" && e.which != 1){
-            document.getElementById("mouseDown").value = "off"; 
-            document.getElementById("mouseIn").value = "on";
+        if(_getElementById("mouseIn").value == "off" && e.which == 1){
+            _getElementById("mouseDown").value = "on"; 
+            const coor = getCoordinate(_getElementById(_canvasId), e);
+            _getElementById("penX").value = coor.x;
+            _getElementById("penY").value = coor.y;
+            _getElementById("mouseIn").value = "on";
+        }else if(_getElementById("mouseIn").value == "off" && e.which != 1){
+            _getElementById("mouseDown").value = "off"; 
+            _getElementById("mouseIn").value = "on";
         }
-        if(document.getElementById("mouseDown").value != "on"){
+        if(_getElementById("mouseDown").value != "on"){
             return;
         }
         document.body.style.cursor = "default";
-    	let canvas = document.getElementById(_canvasId);
+    	let canvas = _getElementById(_canvasId);
         
     	let coor = getCoordinate(canvas, e);
     
-        const x0 = document.getElementById("penX").value;
-        const y0 = document.getElementById("penY").value;
+        const x0 = _getElementById("penX").value;
+        const y0 = _getElementById("penY").value;
         
-        const penStyle = document.getElementById("penStyle").value;
+        const penStyle = _getElementById("penStyle").value;
         
         let penColor = "";
         if(penStyle == "eraser"){
             penColor = "#ffffff";
         }else{
-            penColor = document.getElementById("penColor").value;
+            penColor = _getElementById("penColor").value;
         }    
         
-        const penThick = document.getElementById("penThick").value;
+        const penThick = _getElementById("penThick").value;
         
     	let ctx = canvas.getContext('2d');
         ctx.beginPath();
@@ -103,15 +101,15 @@
         ctx.lineTo(coor.x,coor.y);
         ctx.closePath();
         ctx.stroke();
-        document.getElementById("penX").value = coor.x;
-        document.getElementById("penY").value = coor.y;
+        _getElementById("penX").value = coor.x;
+        _getElementById("penY").value = coor.y;
     }
     
     /**
      * マウスクリックを挙げた時の処理
      */
     function mouseup(e){
-        document.getElementById("mouseDown").value = "off";
+        _getElementById("mouseDown").value = "off";
         document.body.style.cursor = "auto";
         saveCanvas();
     }
@@ -120,7 +118,7 @@
      * マウスが範囲外に出た時の処理
      */ 
     function mouseout(e){
-        document.getElementById("mouseIn").value = "off";
+        _getElementById("mouseIn").value = "off";
         document.body.style.cursor = "auto";
     }
     
@@ -139,20 +137,17 @@
      */
     function printCanvas(){
         if(window.document.getElementById('printFrame') == null){
-            const iframeElement = document.createElement("iframe");
-            iframeElement.setAttribute("id","printFrame");
-            iframeElement.style.visibility = "hidden";
-            iframeElement.style.width = "1px";
-            iframeElement.style.height = "1px";
+            const iframeElement =
+            _createElement("iframe",{id:"printFrame"},{visibility:"hidden",width:"1px",height:"1px"},"");
             window.document.body.appendChild(iframeElement);
         }
         const iframeWindow = window.document.getElementById('printFrame').contentWindow;
         if(iframeWindow.document.getElementById('printImg') == null){
-            const imgElement = document.createElement('img');
+            const imgElement = _createElement("img",{},{},"");
             imgElement.setAttribute("id","printImg");
             iframeWindow.document.body.appendChild(imgElement);
         }
-        iframeWindow.document.getElementById('printImg').src = document.getElementById(_canvasId).toDataURL();
+        iframeWindow.document.getElementById('printImg').src = _getElementById(_canvasId).toDataURL();
         iframeWindow.print();
     }
     
@@ -161,7 +156,7 @@
      */
     function clearCanvas(){
         if(window.confirm('クリアします。よろしいですか？')){
-        	document.getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        	_getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
         }
     }
     
@@ -170,7 +165,7 @@
      */
     function createControlPanel(){
     	// 制御パネルの作成
-    	const controlPanel = document.createElement("div");
+    	const controlPanel = _createElement("div",{},{},"");
     	
     	// カラーピッカーの作成
         controlPanel.appendChild(createColorPicker());
@@ -189,18 +184,9 @@
      * カラーピッカーの作成
      */
     function createColorPicker(){
-    	const colorPicker = document.createElement("div");
-    	colorPicker.setAttribute("id","colorPicker");
-    	colorPicker.innerHTML = "色選択：";
-    	colorPicker.style.padding = "5px";
-        colorPicker.style.margin = "0 auto";
-    	colorPicker.style.display = "inline-block";
-    	
-    	const colorPallet = document.createElement("input");
-    	colorPallet.setAttribute("type","color");
-    	colorPallet.setAttribute("id","penColor");
-    	colorPallet.setAttribute("value","#000000");
-    	colorPicker.appendChild(colorPallet);
+        const colorPicker = _createElement("div",{id:"colorPicker"},{display:"inline-block",padding:"5px",margin:"0 auto"},"色選択：");
+
+    	colorPicker.appendChild(_createElement("input",{type:"color",id:"penColor",value:"#000000"},{},""));
     	return colorPicker;
     }
     
@@ -208,11 +194,7 @@
      * ペンコントロールの作成
      */
     function createPenControl(){
-        const penControl = document.createElement("div");
-        penControl.setAttribute("id","penControl");
-        penControl.style.padding = "5px";
-        penControl.style.margin = "0 auto";
-    	penControl.style.display = "inline-block";
+        const penControl = _createElement("div",{id:"penControl"},{display:"inline-block",padding:"5px",margin:"0 auto"},"");
 
         // ペンの種類コントロールの作成
         penControl.appendChild(createPenStyleControl());
@@ -226,28 +208,18 @@
     }
     
     function createPenStyleControl(){
-        // ペンの太さ変更コントロールの作成
-        const penStyleDiv = document.createElement("div");
-        penStyleDiv.setAttribute("id","penThickDiv");
-        penStyleDiv.style.display = "inline-block";
-        penStyleDiv.style.padding = "5px";
-        
-        const penStyleLabel = document.createElement("label");
-        penStyleLabel.innerHTML = "ペンの種類：";
+        // ペンの種類変更コントロールの作成
+        const penStyleDiv = _createElement("div",{id:"penThickDiv"},{display:"inline-block",padding:"5px"},"");
+
+        const penStyleLabel = _createElement("label",{},{},"ペンの種類：");
         penStyleDiv.appendChild(penStyleLabel);
         
-        const penStyle = document.createElement("select");
-        penStyle.setAttribute("id","penStyle");
-        penStyle.style.width = "100px";
-        
-        const penStylePen = document.createElement("option");
-        penStylePen.setAttribute("value","pen");
-        penStylePen.innerHTML = "通常";
+        const penStyle = _createElement("select",{id:"penStyle"},{width:"100px"},"");
+
+        const penStylePen = _createElement("option",{value:"pen"},{},"通常");
         penStyle.appendChild(penStylePen);
         
-        const penStyleEraser = document.createElement("option");
-        penStyleEraser.setAttribute("value","eraser");
-        penStyleEraser.innerHTML = "消しゴム";
+        const penStyleEraser = _createElement("option",{value:"eraser"},{},"消しゴム");
         penStyle.appendChild(penStyleEraser);
         
         penStyleDiv.appendChild(penStyle);
@@ -257,37 +229,26 @@
     
     function createPenThickControl(){
         // ペンの太さ変更コントロールの作成
-        const penThickDiv = document.createElement("div");
-        penThickDiv.setAttribute("id","penThickDiv");
-        penThickDiv.style.display = "inline-block";
-        penThickDiv.style.padding = "5px";
-        
-        const penThickLabel = document.createElement("label");
-        penThickLabel.innerHTML = "ペンの太さ：";
+        const penThickDiv = _createElement("div",{id:"penThickDiv"},{
+                "padding" : "5px",
+                "display" : "inline-block"
+            });
+
+        const penThickLabel = _createElement("lebel",{},{},"ペンの太さ：");
         penThickDiv.appendChild(penThickLabel);
         
-        const penThick = document.createElement("select");
-        penThick.setAttribute("id","penThick");
-        penThick.style.width = "100px";
-        
-        const penThinest = document.createElement("option");
-        penThinest.setAttribute("value","1");
-        penThinest.innerHTML = "極細";
+        const penThick = _createElement("select",{id:"penThick"},{width:"100px"});
+
+        const penThinest = _createElement("option",{value:"1"},{},"極細");
         penThick.appendChild(penThinest);
 
-        const penThin = document.createElement("option");
-        penThin.setAttribute("value","3");
-        penThin.innerHTML = "細い";
+        const penThin = _createElement("option",{value:"3"},{},"細い");
         penThick.appendChild(penThin);
         
-        const penBig = document.createElement("option");
-        penBig.setAttribute("value","5");
-        penBig.innerHTML = "太い";
+        const penBig = _createElement("option",{value:"5"},{},"太い");
         penThick.appendChild(penBig);
         
-        const penBigest = document.createElement("option");
-        penBigest.setAttribute("value","7");
-        penBigest.innerHTML = "極太";
+        const penBigest = _createElement("option",{value:"7"},{},"極太");
         penThick.appendChild(penBigest);
         
         
@@ -299,29 +260,33 @@
      * 印刷設定等のコントロールの作成
      */
     function createControl(){
-        const control = document.createElement("div");
-        control.style.padding = "5px";
-        control.style.margin = "0 auto";
-    	control.style.display = "inline-block";
-        
-        const clearButton = document.createElement("input");
-        clearButton.setAttribute("type","button");
-        clearButton.setAttribute("id","clearButton");
-        clearButton.setAttribute("value","clear");
+        const control = _createElement("div",{},{
+                "padding" : "5px",
+                "margin"  : "0 auto",
+                "display" : "inline-block"
+            });
+
+        const clearButton = _createElement("input",{
+                            "type":"button",
+                            "id":"clearButton",
+                            "value":"clear"
+                        },{});
         clearButton.addEventListener("mousedown",clearCanvas);
         control.appendChild(clearButton);
 
-        const printButton = document.createElement("input");
-        printButton.setAttribute("type","button");
-        printButton.setAttribute("id","printButton");
-        printButton.setAttribute("value","print");
+        const printButton = _createElement("input",{
+                            "type":"button",
+                            "id":"printButton",
+                            "value":"print"
+                        },{});
         printButton.addEventListener("mousedown",printCanvas);
         control.appendChild(printButton);
         
-        const backButton = document.createElement("input");
-        backButton.setAttribute("type","button");
-        backButton.setAttribute("id","backButton");
-        backButton.setAttribute("value","back");
+        const backButton = _createElement("input",{
+                            "type":"button",
+                            "id":"backButton",
+                            "value":"back"
+                        },{});
         backButton.addEventListener("mousedown",restoreCanvas);
         control.appendChild(backButton);
         
@@ -336,38 +301,43 @@
         const hiddenArea = document.createElement("div");
         
         // 描画位置X
-        const penX = document.createElement("input");
-        penX.setAttribute("type","hidden");
-        penX.setAttribute("id","penX");
-        penX.setAttribute("value","");
+        const penX = _createElement("input",{
+                            "type"  :"hidden",
+                            "id"    :"penX",
+                            "value" :""
+                        },{});
         hiddenArea.appendChild(penX);
 
         // 描画位置Y
-        const penY = document.createElement("input");
-        penY.setAttribute("type","hidden");
-        penY.setAttribute("id","penY");
-        penY.setAttribute("value","");
+        const penY = _createElement("input",{
+                            "type":"hidden",
+                            "id":"penY",
+                            "value":""
+                        },{});
         hiddenArea.appendChild(penY);
 
         // マウス押下判断
-        const mouseDown = document.createElement("input");
-        mouseDown.setAttribute("type","hidden");
-        mouseDown.setAttribute("id","mouseDown");
-        mouseDown.setAttribute("value","off");
+        const mouseDown = _createElement("input",{
+                            "type":"hidden",
+                            "id":"mouseDown",
+                            "value":"off"
+                        },{});
         hiddenArea.appendChild(mouseDown);
 
         // マウス描画内判断
-        const mouseIn = document.createElement("input");
-        mouseIn.setAttribute("type","hidden");
-        mouseIn.setAttribute("id","mouseIn");
-        mouseIn.setAttribute("value","off");
+        const mouseIn = _createElement("input",{
+                            "type":"hidden",
+                            "id":"mouseIn",
+                            "value":"off"
+                        },{});
         hiddenArea.appendChild(mouseIn);
         
         // イメージデータ保存
-        const backNum = document.createElement("input");
-        backNum.setAttribute("type","hidden");
-        backNum.setAttribute("id","backNum");
-        backNum.setAttribute("value","0");
+        const backNum = _createElement("input",{
+                            "type":"hidden",
+                            "id":"backNum",
+                            "value":"0"
+                        },{});
         hiddenArea.appendChild(backNum);
 
         return hiddenArea;
@@ -377,22 +347,43 @@
      * キャンバスの保存
      */
     function saveCanvas(){
-        const backNum = parseInt(document.getElementById("backNum").value) + 1;
-        imageData[backNum] = document.getElementById(_canvasId).getContext('2d').getImageData(0,0,_styleCanvasWidth,_styleCanvasHeight);
-        document.getElementById("backNum").value = backNum.toString();
+        const backNum = parseInt(_getElementById("backNum").value) + 1;
+        imageData[backNum] = _getElementById(_canvasId).getContext('2d').getImageData(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        _getElementById("backNum").value = backNum.toString();
     }
      
     /**
      * キャンバスのリストア
      */
     function restoreCanvas(){
-        document.getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
-        const backNum = parseInt(document.getElementById("backNum").value) - 1;
+        _getElementById(_canvasId).getContext('2d').clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        const backNum = parseInt(_getElementById("backNum").value) - 1;
         if(backNum > 0){
-            document.getElementById(_canvasId).getContext('2d').putImageData(imageData[backNum],0,0);
+            _getElementById(_canvasId).getContext('2d').putImageData(imageData[backNum],0,0);
         }else if(backNum < 0){
             return;
         }
-        document.getElementById("backNum").value = backNum.toString();
+        _getElementById("backNum").value = backNum.toString();
     }
+    
+    
+    /** common function ******************************************************/
+        function _getElementById(id){
+            return  document.getElementById(id);
+        }
+    
+        function _createElement(tagName,attr=[] ,style=[],innerHTML=''){
+            const element = document.createElement(tagName);
+            for(let key in attr){
+                element.setAttribute(key,attr[key]);
+            }
+            for(let key in style){
+                element.style[key] = style[key];
+            }
+            if(innerHTML != 'undefined'){
+                element.innerHTML = innerHTML;
+            }
+            return element;
+        }
+    
 })();
