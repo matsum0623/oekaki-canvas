@@ -196,6 +196,14 @@
         }
     }
     
+    /**
+     * キャンバスをイメージとして保存
+     */
+    function saveCanvasAsImage(){
+        const imageUrl = _getElementById(_ID_CANVAS).toDataURL();
+        _createElement("a",{"href":imageUrl,download:"images.png"},{},"画像リンク").click();
+    }
+    
     /* 各コントロール作成 *****************************************************/
     /**
      * コントロールパネルの作成
@@ -262,6 +270,9 @@
         return penControl;
     }
     
+    /**
+     * ペンスタイルコントロールの作成
+     */
     function createPenStyleControl(){
         // ペンの種類変更コントロールの作成
         const penStyleDiv = 
@@ -305,7 +316,9 @@
         return penStyleDiv;
     }
     
-    
+    /**
+     * ペンの太さコントロールの作成
+     */
     function createPenThickControl(){
         // ペンの太さ変更コントロールの作成
         const penThickDiv = _createElement("div",{id:"penThickDiv"},{
@@ -339,12 +352,14 @@
      * 印刷設定等のコントロールの作成
      */
     function createControl(){
+        // コントロールパネル作成
         const control = _createElement("div",{},{
                 "padding" : "5px",
                 "margin"  : "0 auto",
                 "display" : "inline-block"
             });
 
+        // クリアボタン
         const clearButton = _createElement("input",{
                             "type":"button",
                             "id":"clearButton",
@@ -353,6 +368,16 @@
         clearButton.addEventListener("mousedown",clearCanvas);
         control.appendChild(clearButton);
 
+        // 画像として保存ボタン
+        const saveButton = _createElement("input",{
+                            "type":"button",
+                            "id":"saveButton",
+                            "value":"save"
+                        },{});
+        saveButton.addEventListener("mousedown",saveCanvasAsImage);
+        control.appendChild(saveButton);
+
+        // 印刷ボタン
         const printButton = _createElement("input",{
                             "type":"button",
                             "id":"printButton",
@@ -361,6 +386,7 @@
         printButton.addEventListener("mousedown",printCanvas);
         control.appendChild(printButton);
         
+        // 戻るボタン
         const backButton = _createElement("input",{
                             "type":"button",
                             "id":"backButton",
@@ -432,7 +458,7 @@
                 .getImageData(0,0,_styleCanvasWidth,_styleCanvasHeight);
         _setValueFromId(_ID_BACK_NUM,backNum.toString());
     }
-     
+    
     /**
      * キャンバスのリストア
      */
@@ -449,10 +475,22 @@
     
     
     /** common function *******************************************************/
+    
+        // DOM操作系 ///////////////////////////////////////////////////////////
+        /**
+         * IDを指定してエレメントを取得
+         */
         function _getElementById(id){
             return  document.getElementById(id);
         }
-    
+
+        /**
+         * エレメントの作成
+         * @type(String) tagName タグ名称
+         * @type(array[String:String]) attributeの設定
+         * @type(array[String:String]) styleの設定
+         * @type(String) innerHTMLの設定
+         */
         function _createElement(tagName,attr=[] ,style=[],innerHTML=''){
             const element = document.createElement(tagName);
             for(let key in attr){
@@ -467,6 +505,49 @@
             return element;
         }
         
+        // inputタグデータの処理関数 ///////////////////////////////////////////
+        /**
+         * IDを指定してVALUEを設定
+         */
+        function _setValueFromId(id,value){
+            _getElementById(id).value = value;
+            return;
+        }
+        /**
+         * IDを指定してVALUEを取得
+         */
+        function _getValueFromId(id){
+            return _getElementById(id).value;
+        }
+        /**
+         * HIDDEN要素に座標を登録
+         */
+        function _setHiddenPenCoordinate(x,y){
+            _getElementById(_ID_HIDDEN_PENX).value = x;
+            _getElementById(_ID_HIDDEN_PENY).value = y;
+            return;
+        }
+        /**
+         * HIDDEN要素の座標を取得
+         */
+        function _getHiddenGetCoordinate(){
+            return {
+                x : _getElementById(_ID_HIDDEN_PENX).value,
+                y : _getElementById(_ID_HIDDEN_PENY).value
+            };
+        }
+        /**
+         * カーソルの設定
+         */
+        function _setCursor(type){
+            document.body.style.cursor = type;
+        }
+        
+
+        // CANVAS関連 //////////////////////////////////////////////////////////
+        /**
+         * 円の描画
+         */
         function _drawCircle(x,y,radius,fillColor){
             const ctx = _getContext();
             ctx.beginPath();
@@ -475,39 +556,18 @@
             ctx.arc(x, y, radius, 0, Math.PI*2, false);
             ctx.fill();
         }
-        
+        /**
+         * コンテキストの取得
+         */
         function _getContext(){
             return _getElementById(_ID_CANVAS).getContext('2d');
         }
-    
+        /**
+         * キャンバスのクリア
+         */
         function _clearCanvas(){
             _getContext().clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
         }
-        
-        /* inputタグデータの処理関数 ******************************************/
     
-        function _setValueFromId(id,value){
-            _getElementById(id).value = value;
-            return;
-        }
-        function _getValueFromId(id){
-            return _getElementById(id).value;
-        }
-    
-        function _setHiddenPenCoordinate(x,y){
-            _getElementById(_ID_HIDDEN_PENX).value = x;
-            _getElementById(_ID_HIDDEN_PENY).value = y;
-            return;
-        }
-        function _getHiddenGetCoordinate(){
-            return {
-                x : _getElementById(_ID_HIDDEN_PENX).value,
-                y : _getElementById(_ID_HIDDEN_PENY).value
-            };
-        }
-    
-        function _setCursor(type){
-            document.body.style.cursor = type;
-        }
-        
+    /***************************************************************************/
 })();
