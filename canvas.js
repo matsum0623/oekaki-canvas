@@ -448,7 +448,7 @@
     }
     
     
-    /** common function ******************************************************/
+    /** common function *******************************************************/
         function _getElementById(id){
             return  document.getElementById(id);
         }
@@ -480,7 +480,11 @@
             return _getElementById(_ID_CANVAS).getContext('2d');
         }
     
-        /* hidden属性のデータ処理関数 *****************************************/
+        function _clearCanvas(){
+            _getContext().clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
+        }
+        
+        /* inputタグデータの処理関数 ******************************************/
     
         function _setValueFromId(id,value){
             _getElementById(id).value = value;
@@ -506,7 +510,4 @@
             document.body.style.cursor = type;
         }
         
-        function _clearCanvas(){
-            _getContext().clearRect(0,0,_styleCanvasWidth,_styleCanvasHeight);
-        }
 })();
