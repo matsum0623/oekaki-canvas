@@ -194,6 +194,9 @@
     function clearCanvas(){
         if(window.confirm(_MESSAGE_CLEAR)){
         	_clearCanvas();
+        	// 戻るボタン用配列の初期化
+        	imageData = [];
+        	_setValueFromId(_ID_BACK_NUM,"0");
         }
     }
     
