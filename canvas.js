@@ -121,12 +121,13 @@
         }
         _setCursor(_CURSOR_STYLE_DEFAULT);
 
-    	let coor = getCoordinate(canvasElement, e);
+        const coor0 = _getHiddenGetCoordinate();
+    	const coor  = getCoordinate(canvasElement, e);
     
         ctx.beginPath();
-        ctx.lineWidth = _getValueFromId(_ID_PEN_THICK);
+        ctx.lineWidth   = _getValueFromId(_ID_PEN_THICK);
         ctx.strokeStyle = _getValueFromId(_ID_PEN_STYLE) == _PENSTYLE_ERASER ? _eraserColor : _getValueFromId(_ID_PEN_COLOR);
-        ctx.moveTo(_getHiddenGetCoordinate().x,_getHiddenGetCoordinate().y);
+        ctx.moveTo(coor0.x,coor0.y);
         ctx.lineTo(coor.x,coor.y);
         ctx.closePath();
         ctx.stroke();
